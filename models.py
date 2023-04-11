@@ -7,8 +7,13 @@ class User(db.Models):
     __tablename__='users'
 
 #Сделать Album - Никита
-class Album(db.Models):
-    __tablename__='albums'
+class Albums(db.Model):
+    __tablename__ = 'Albums'
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    user_id = db.Column(db.Integer, nullable=False)
+    decor_css = db.Column(db.string(), nullable=False)
+
 
 #Сделать Photo - Арсений
 class Photo(db.Models):
