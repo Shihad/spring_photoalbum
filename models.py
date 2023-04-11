@@ -13,6 +13,12 @@ class Albums(db.Model):
     name = db.Column(db.String(255), nullable=False)
     user_id = db.Column(db.Integer, nullable=False)
     decor_css = db.Column(db.string(), nullable=False)
+    def __init__(self,id,name.user_id,decor_css):
+        self.id=id
+        self.name=name
+        self.user_id=user_id
+        self.decor_css=decor_css
+
 
 
 #Сделать Photo - Арсений
