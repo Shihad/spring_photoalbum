@@ -9,6 +9,17 @@ app.config['SECRET_KEY'] = 'you_cant_guess_this_key'
 
 db.init_app(app)
 
+@app.before_first_request
+def create_tables():
+    db.drop_all()
+    db.create_all()
+    user1 = User('vvasya','vasya.vasin@mail.com','qwerty')
+    user2 = User('petya','pet.pyatochkin@mail.com','12345')
+    user3 = User('olyalya','yaolya@mail.com','ytrewq')
+    db.session.add(user1)
+    db.session.add(user2)
+    db.session.add(user3)
+    db.session.commit()
 
 # Дмитрий
 @app.route("/users")
@@ -20,50 +31,27 @@ def users():
     return res
 
 
-    """
-    В классе User нужен property json
-    @property
-    def json(self):
-        return self.__dict__
-    """
-
 
 @app.route("/albums")
 def albums():
     res = {"albums": []}
     user_id = request.args["user_id"]
-    albums = db.session.query(User).get(user_id)
+    albums = db.session.query(User).get(user_id=user_id)
     for album in albums:
         res["albums"].append(album.json)
     return res
 
-    """
-    Запрос должен содержать argument user_id
-    
-    В классе Album нужен property json
-    @property
-    def json(self):
-        return self.__dict__
-    """
 
 @app.route("/photos")
 def photos():
     res = {"photos": []}
     album_id = request.args["album_id"]
-    photos = db.session.query(User).get(album_id)
+    photos = db.session.query(User).get(album_id=album_id)
     for photo in photos:
         res["photos"].append(photo.json)
     return res
 
 
-    """
-    Запрос должен содержать argument album_id
-    
-    В классе Album нужен property json
-    @property
-    def json(self):
-        return self.__dict__
-    """
 
 
 app.run()
