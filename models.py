@@ -11,8 +11,19 @@ class User():
     login=db.Column(db.String(50))
 
 #Сделать Album - Никита
-class Album(db.Models):
-    __tablename__='albums'
+class Albums(db.Model):
+    __tablename__ = 'Albums'
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    user_id = db.Column(db.Integer, nullable=False)
+    decor_css = db.Column(db.string(), nullable=False)
+    def __init__(self,id,name.user_id,decor_css):
+        self.id=id
+        self.name=name
+        self.user_id=user_id
+        self.decor_css=decor_css
+
+
 
 #Сделать Photo - Арсений
 class Photo(db.Models):
