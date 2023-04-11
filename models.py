@@ -3,8 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 #Сделать User - Богдан
-class User(db.Models):
+class User():
     __tablename__='users'
+    id=db.Column(db.Integer(),primary_key=True)
+    password=db.Column(db.String(100))
+    mail=db.Column(db.String(50))
+    login=db.Column(db.String(50))
 
 #Сделать Album - Никита
 class Album(db.Models):
