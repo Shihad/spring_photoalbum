@@ -1,16 +1,24 @@
-# This is a sample Python script.
+from flask import Flask
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from models import db, User, Album, Photo
 
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///database.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = 'you_cant_guess_this_key'
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+8 to toggle the breakpoint.
+db.init_app(app)
 
+#Дмитрий
+@app.route("/users")
+def users():
+    pass
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+@app.route("/photos")
+def photos():
+    pass
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+@app.route("/albums")
+def albums():
+    pass
+app.run()
