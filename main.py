@@ -13,6 +13,7 @@ db.init_app(app)
 def create_tables():
     db.drop_all()
     db.create_all()
+    db.session.commit()
     user1 = User('vvasya','vasya.vasin@mail.com','qwerty')
     user2 = User('petya','pet.pyatochkin@mail.com','12345')
     user3 = User('olyalya','yaolya@mail.com','ytrewq')
@@ -20,37 +21,71 @@ def create_tables():
     db.session.add(user2)
     db.session.add(user3)
     db.session.commit()
+    album1 = Album('Море 2022', user1.id)
+    db.session.add(album1)
+    db.session.commit()
 
 # Дмитрий
-@app.route("/users")
+@app.route("/users", methods = ['post','get'])
 def users():
-    res = {"users": []}
-    users = db.session.query(User).get_all()
-    for user in users:
-        res["users"].append(user.json)
-    return res
+    if request.method == "GET":
+        res = {"users": []}
+        userslist = db.session.query(User).all()
+        for user in userslist:
+            res["users"].append(user.json)
+        return res
+    if request.method == "POST":
+        login = request.data['login']
+        password = request.data['password']
+        pass_confirm = request.data['pass_confirm']
+        email = request.data['email']
+        user = User.query.filter_by(login == login).first()
+        if user:
+            return {"error":"This login already registered"}
+        user = User.query.filter_by(email == email).first()
+        if user:
+            return {"error": "This email already registered"}
+        if pass_confirm!=password:
+            return {"error": "Password not confirmed"}
+        user = User(login,email,password)
+        db.session.add(user)
+        db.session.commit()
+        return {"message": "User created succesfully"}
 
-
+@app.route("/users/<uid>")
+def user_page(uid):
+    #Богдан
+    return
 
 @app.route("/albums")
 def albums():
+    # Добавить проверку методов GET, POST, UPDATE, DELETE
+    # Богдан
     res = {"albums": []}
-    user_id = request.args["user_id"]
-    albums = db.session.query(User).get(user_id=user_id)
-    for album in albums:
+    albumslist = db.session.query(Album).all()
+    for album in albumslist:
         res["albums"].append(album.json)
     return res
 
+@app.route("/albums/<aid>")
+def album_page(aid):
+    #Арсений
+    return
 
 @app.route("/photos")
 def photos():
+    #Добавить проверку методов GET, POST, UPDATE, DELETE
+    #Никита
     res = {"photos": []}
-    album_id = request.args["album_id"]
-    photos = db.session.query(User).get(album_id=album_id)
-    for photo in photos:
+    photoslist = db.session.query(Photo).all();
+    for photo in photoslist:
         res["photos"].append(photo.json)
     return res
 
+@app.route("/photos/<pid>")
+def photo_page(pid):
+    #Никита
+    return
 
 
 
