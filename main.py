@@ -107,14 +107,24 @@ def photos():
     #Никита
     res = {"photos": []}
     photoslist = db.session.query(Photo).all();
-    for photo in photoslist:
-        res["photos"].append(photo.json)
-    return res
+    if request.metod=="GET":
+        for photo in photoslist:
+            res["photos"].append(photo.json)
+        return res
+    if request.metod=="post":
+        photo=request.data(photos)
+    if request.method == 'POST':
+        user_id=request.data['user_id']
+        album_id=request.data['album_id']
+        name = request.data['name']
+        photo = request.data['photo']
+        path = request.data['path']
+        return photo
 
 @app.route("/photos/<pid>")
 def photo_page(pid):
     #Никита
-    return
+
 
 
 
