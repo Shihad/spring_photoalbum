@@ -55,18 +55,34 @@ def users():
 @app.route("/users/<uid>")
 def user_page(uid):
     #Богдан
+    password = request.data['password']
+    mail = request.data['mail']
+    login = request.data['login']
+    albums = request.data['albums']
+    photos = request.data['photos']
     return
 
-@app.route("/albums")
+@app.route("/albums", methods = ['post','get'])
 def albums():
     # Добавить проверку методов GET, POST, UPDATE, DELETE
     # Богдан
-    res = {"albums": []}
-    albumslist = db.session.query(Album).all()
-    for album in albumslist:
-        res["albums"].append(album.json)
-    return res
-
+    if request.method == "GET":
+        res = {"albums": []}
+        albumslist = db.session.query(Album).all()
+        for album in albumslist:
+            res["albums"].append(album.json)
+        return res
+    if request.method == "POST":
+        name = request.data['name']
+        user_id = request.data['']
+        album = Album(name, user_id)
+        db.session.add(album)
+        db.session.commit()
+    if request.method == "DELETE":
+        db.session.delete(album)
+        db.session.commit()
+    if request.method == "UPDATE":
+        name =
 @app.route("/albums/<aid>")
 def album_page(aid):
     #Арсений
