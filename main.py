@@ -70,7 +70,20 @@ def albums():
 @app.route("/albums/<aid>")
 def album_page(aid):
     #Арсений
-    return
+    if request.method == "GET":
+        album=Album.query.filter_by(id=aid).first()
+        print(album.name, 'имя')
+        name=album.name
+        print(album.user_id,'айди пользователя')
+        user_id=album.user_id
+        print(album.decor_css, "css")
+        decor_css = album.decor_css
+        print(album.photos,"фото")
+        photos=album.photos
+        print(album.name, album.user_id, album.decor_css, album.photos)
+        #return(name) <-- нормально выводит имя
+        res=[name, user_id, decor_css, photos]
+        return(res) #выводит "\u041c\u043e\u0440\u0435 2022" вместо имени
 
 @app.route("/photos")
 def photos():
