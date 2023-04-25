@@ -60,14 +60,27 @@ def users():
 def user_page(uid):
     #Богдан - изменить
     if request.method == "GET":
-        pass
+        user = User.query.filter_by(id=uid).first()
+        return user.json
     if request.method == "PUT":
+        user = User.query.filter_by(id=uid).first()
         login = request.json['login']
-        #user = pass#найти в БД с указанным mail
-        #user.login = login
-        return
+        password = request.json['password']
+        pass_confirm = request.json['pass_confirm']
+        email = request.json['email']
+        if password==pass_confirm:
+            user.login = login
+            user.mail = email
+            user.password = password
+            db.session.add(user)
+            db.session.commit()
+            return {"message": "User updated successfully"}
+        return  {"error": "Password not confirmed"}
     if request.method == "DELETE":
-        pass
+        user = User.query.filter_by(id=uid).first()
+        db.session.delete(user)
+        db.session.commit()
+        return {'message': 'User deleted successfully'}
 
 @app.route("/albums", methods = ['post','get'])
 def albums():
@@ -80,15 +93,17 @@ def albums():
             res["albums"].append(album.json)
         return res
     if request.method == "POST":
-        name = request.data['name']
-        user_id = request.data['']
+        name = request.json['name']
+        user_id = request.json['']
         album = Album(name, user_id)
         db.session.add(album)
         db.session.commit()
     if request.method == "DELETE":
         #найти альбом
+        album = Album.query.filter_by(id = uid).first()
         db.session.delete(album)
         db.session.commit()
+        return {'message': 'Album deleted successfully'}
     if request.method == "UPDATE":
         pass
 
