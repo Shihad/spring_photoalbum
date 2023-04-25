@@ -24,6 +24,9 @@ def create_tables():
     album1 = Album('Море 2022', user1.id)
     db.session.add(album1)
     db.session.commit()
+    photo1 = Photo(user1.id, album1.id, "/static/img/1.jpg","Мы с Серегой")
+    db.session.add(photo1)
+    db.session.commit()
 
 # Дмитрий
 @app.route("/users", methods = ['post','get'])
@@ -35,14 +38,15 @@ def users():
             res["users"].append(user.json)
         return res
     if request.method == "POST":
-        login = request.data['login']
-        password = request.data['password']
-        pass_confirm = request.data['pass_confirm']
-        email = request.data['email']
-        user = User.query.filter_by(login == login).first()
+        print(request.json)
+        login = request.json['login']
+        password = request.json['password']
+        pass_confirm = request.json['pass_confirm']
+        email = request.json['email']
+        user = User.query.filter_by(login = login).first()
         if user:
             return {"error":"This login already registered"}
-        user = User.query.filter_by(email == email).first()
+        user = User.query.filter_by(mail = email).first()
         if user:
             return {"error": "This email already registered"}
         if pass_confirm!=password:
@@ -54,18 +58,21 @@ def users():
 
 @app.route("/users/<uid>")
 def user_page(uid):
-    #Богдан
-    password = request.data['password']
-    mail = request.data['mail']
-    login = request.data['login']
-    albums = request.data['albums']
-    photos = request.data['photos']
-    return
+    #Богдан - изменить
+    if request.method == "GET":
+        pass
+    if request.method == "PUT":
+        login = request.json['login']
+        user = #найти в БД с указанным mail
+        user.login = login
+        return
+    if request.method == "DELETE":
+        pass
 
 @app.route("/albums", methods = ['post','get'])
 def albums():
     # Добавить проверку методов GET, POST, UPDATE, DELETE
-    # Богдан
+    # Богдан data заменить на json
     if request.method == "GET":
         res = {"albums": []}
         albumslist = db.session.query(Album).all()
@@ -79,10 +86,12 @@ def albums():
         db.session.add(album)
         db.session.commit()
     if request.method == "DELETE":
+        #найти альбом
         db.session.delete(album)
         db.session.commit()
     if request.method == "UPDATE":
-        name =
+        pass
+
 @app.route("/albums/<aid>")
 def album_page(aid):
     #Арсений
@@ -100,6 +109,8 @@ def album_page(aid):
         #return(name) <-- нормально выводит имя
         res=[name, user_id, decor_css, photos]
         return(res) #выводит "\u041c\u043e\u0440\u0435 2022" вместо имени
+    if request.method == "POST":
+        pass
 
 @app.route("/photos")
 def photos():
@@ -107,12 +118,11 @@ def photos():
     #Никита
     res = {"photos": []}
     photoslist = db.session.query(Photo).all();
-    if request.metod=="GET":
+    if request.method=="GET":
         for photo in photoslist:
             res["photos"].append(photo.json)
         return res
-    if request.metod=="post":
-        photo=request.data(photos)
+    #поменять data на json по образцу в users
     if request.method == 'POST':
         user_id=request.data['user_id']
         album_id=request.data['album_id']
@@ -124,6 +134,7 @@ def photos():
 @app.route("/photos/<pid>")
 def photo_page(pid):
     #Никита
+    pass
 
 
 
