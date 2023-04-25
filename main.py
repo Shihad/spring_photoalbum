@@ -63,8 +63,8 @@ def user_page(uid):
         pass
     if request.method == "PUT":
         login = request.json['login']
-        user = #найти в БД с указанным mail
-        user.login = login
+        #user = pass#найти в БД с указанным mail
+        #user.login = login
         return
     if request.method == "DELETE":
         pass
@@ -92,7 +92,7 @@ def albums():
     if request.method == "UPDATE":
         pass
 
-@app.route("/albums/<aid>")
+@app.route("/albums/<aid>",methods = ['GET','PUT', "DELETE"])
 def album_page(aid):
     #Арсений
     if request.method == "GET":
@@ -106,12 +106,23 @@ def album_page(aid):
         print(album.photos,"фото")
         photos=album.photos
         print(album.name, album.user_id, album.decor_css, album.photos)
-        #return(name) <-- нормально выводит имя
         res=[name, user_id, decor_css, photos]
-        return(res) #выводит "\u041c\u043e\u0440\u0435 2022" вместо имени
-    if request.method == "POST":
-        pass
-
+        return(res)
+    if request.method == 'PUT':
+        album=Album.query.filter_by(id=aid).first()
+        name=request.json['name']
+        user_id=request.json['user_id']
+        decor_css = request.json['decor_css']
+        album.name = name
+        album.user_id = user_id
+        album.decor_css = decor_css
+        db.session.add(album)
+        db.session.commit()
+        return {"message": "Album created succesfully"}
+    if request.method == "DELETE":
+        album=Album.query.filter_by(id=aid).first()
+        db.session.delete(album)
+        db.session.commit()
 @app.route("/photos")
 def photos():
     #Добавить проверку методов GET, POST, UPDATE, DELETE
