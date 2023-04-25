@@ -124,17 +124,28 @@ def photos():
         return res
     #поменять data на json по образцу в users
     if request.method == 'POST':
-        user_id=request.data['user_id']
-        album_id=request.data['album_id']
-        name = request.data['name']
-        photo = request.data['photo']
-        path = request.data['path']
+        user_id=request.json['user_id']
+        album_id=request.json['album_id']
+        name = request.json['name']
+        photo = request.json['photo']
+        path = request.json['path']
         return photo
-
+    
 @app.route("/photos/<pid>")
 def photo_page(pid):
     #Никита
-    pass
+    if request.method == "GET":
+        photo_page=photo_page.query.filter_by(id=aid).first()
+        print(photos.name, 'имя')
+        name=photos.name
+        print(photos.user_id,'Айди пользователя который отправил фотографию')
+        user_id=photo.user_id
+        photo_page=photo.user_id
+        print(photos.photos,"фото")
+        #photos=album.photos
+        print(photo.id, photo.name, photo.user_id, photo.decor_css)
+        all=[name, photo_page, user_id]
+        return(all)
 
 
 
