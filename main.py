@@ -94,7 +94,7 @@ def albums():
 
 @app.route("/albums/<aid>",methods = ['GET','PUT', "DELETE"])
 def album_page(aid):
-    #Арсений
+#Арсений
     if request.method == "GET":
         album=Album.query.filter_by(id=aid).first()
         print(album.name, 'имя')
