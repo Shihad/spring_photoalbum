@@ -139,13 +139,13 @@ def album_page(aid):
         db.session.delete(album)
         db.session.commit()
         
-@app.route("/photos")
-def photos():
+@app.route("/photos", methods = ['post', ' get', 'delete', 'update'])
+def photos(pid):
     #Добавить проверку методов GET, POST, UPDATE, DELETE
     #Богдан
-    res = {"photos": []}
-    photoslist = db.session.query(Photo).all();
     if request.method=="GET":
+        res = {"photos": []}
+        photoslist = db.session.query(Photo).all()
         for photo in photoslist:
             res["photos"].append(photo.json)
         return res
@@ -158,6 +158,15 @@ def photos():
         photo = Photo(user_id, album_id, path,comment,shot_date)
         db.session.add(photo)
         db.session.commit()
+    if request.method == "DELETE":
+        photo=Photo.query.filter_by(id=pid).first()
+        if photo:
+            db.session.delete(photo)
+            db.session.commit()
+        else:
+            return {'message': 'no such photo'}
+
+
 
 @app.route("/photos/<pid>")
 def photo_page(pid):
