@@ -88,7 +88,7 @@ def user_page(uid):
         # добавить проверки на существование пользователя
         user = User.query.filter_by(id=uid).first()
         db.session.delete(user)
-        db.session.commit()
+        db.session.commit() #не удаляется потому что существует альбом с таким пользователем
         return {'message': 'User deleted successfully'}
 
 @app.route("/albums", methods = ['post','get'])
@@ -109,35 +109,64 @@ def albums():
 
 
 
-@app.route("/albums/<aid>")
+@app.route("/albums/<aid>", methods = ['post','get', 'PUT', "DELETE"])
 def album_page(aid):
     if request.method == "GET":
         album=Album.query.filter_by(id=aid).first()
-        #Арсений - создать по образцу users - добавить проверки
-        name=album.name
-        user_id=album.user_id
-        decor_css = album.decor_css
-        photos=album.photos
-        #return(name) <-- нормально выводит имя
-        #заменить на словарь
-        #res={"name":name, user_id, decor_css}
-        res={}
-        return(res)
-    if request.method == 'PUT': #Арсений - создать по образцу users - добавить проверки
-        album=Album.query.filter_by(id=aid).first()
+        if album:
+            return album.json
+        else:
+            return{"error": "Album not found"}
+        #Арсений - создать по образцу users - добавить проверки +
+
+    if request.method == 'PUT': #Арсений - создать по образцу users - добавить проверки +
+        cur_album=Album.query.filter_by(id=aid).first()
         name=request.json['name']
         user_id=request.json['user_id']
         decor_css = request.json['decor_css']
-        album.name = name
-        album.user_id = user_id
-        album.decor_css = decor_css
-        db.session.add(album)
+        album=Album.query.filter_by(user_id=user_id).first()
+        if not album:
+            return {"error":"no such album"}
+        cur_album.name = name
+        cur_album.user_id = user_id
+        cur_album.decor_css = decor_css
+        db.session.add(cur_album)
         db.session.commit()
-        return {"message": "Album created succesfully"}
-    if request.method == "DELETE": #Арсений - создать по образцу users - добавить проверки
+        return {"message": "Album updated succesfully"}
+        '''
+            if request.method == "PUT": #работает
+        cur_user = User.query.filter_by(id=uid).first()
+        login = request.json['login']
+        password = request.json['password']
+        email = request.json['email']
+        user = User.query.filter_by(login=login).first()
+        if user and user!=cur_user:
+            return {"error": "This login already registered"}
+        user = User.query.filter_by(mail=email).first()
+        if user and user!=cur_user:
+            return {"error": "This email already registered"}
+        if not cur_user:
+            return {"error": "No such user"}
+        #добавить проверки на существование пользователя,
+        #на совпадение с уже существующими логином и емэйл
+        cur_user.login = login
+        cur_user.mail = email
+        cur_user.password = password
+        db.session.add(cur_user)
+        db.session.commit()
+        return {"message": "User updated successfully"}
+        '''
+    if request.method == "DELETE": #Арсений - создать по образцу users - добавить проверки +
         album=Album.query.filter_by(id=aid).first()
-        db.session.delete(album)
-        db.session.commit()
+        if not album:
+            return {"error": "no such album"}
+        else:
+            print('1')
+            db.session.delete(album)
+            print('2')
+            db.session.commit() #не удаляется потому что есть фотографии связанаы с этим альбомом
+            print('3')
+            return {"message": "Album deleted succefully"}
         
 @app.route("/photos")
 def photos():
