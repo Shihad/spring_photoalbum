@@ -1,0 +1,65 @@
+body {
+  width:100%;
+  font-family: Arial;
+}
+  header {
+    margin: 5px;
+    background-color: orange;
+    width: 99%;
+    height:50px;
+    box-sizing: padding-box ;
+  }
+  .avatar {
+    width: 49px;
+    height: 49px;
+    border-radius: 24px;
+    float: right;
+  }
+
+  content {
+    background-color: whitesmoke;
+    width: 80%;
+    min-height:600px;
+    display: block;
+    margin-left: 10%;
+    display: grid;
+    grid-template-columns: 50px 1fr 50px;
+    grid-template-rows: 70px 1fr 50px;
+  }
+
+  .photoalbum_header {
+    grid-column: 1/4;
+    background-color: #d6d6d6;
+    width:100%;
+    font-size: 20pt;
+    vertical-align: middle;
+  }
+  .photoalbum_footer {
+    grid-column: 1/4;
+    background-color: #d6d6d6;
+    width:100%;
+  }
+  .photo {
+    margin-left: 6%;
+    margin-right: 3%;
+    margin-top: 1%;
+    margin-bottom: 3%;
+    width: 800px;
+    height: 500px;
+  }
+  .left_arrow {
+    width: 100px;
+    height: 100px;
+    margin-top: 130%;
+    margin-left: 2%;
+  }
+  .right_arrow {
+    width: 100px;
+    height: 100px;
+    margin-top: 130%;
+    margin-right: 100%;
+  }
+  .text {
+    margin-top: 1.5%;
+    margin-left: 2%;
+  }
