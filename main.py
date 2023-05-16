@@ -193,9 +193,24 @@ def photos():
             db.session.commit()
         else:
             return {'message': 'no such photo'}
-
-
-
+    if request.method == "PUT":
+        cur_photo = Photo.query.filter_by(id=pid).first()
+        user_id = request.json['user_id']
+        album_id = request.json['album_id']
+        path = request.json['path']
+        shot_date = request.json['shot_date']
+        comment = request.json['comment']
+        if photo:
+            cur_photo.name = album_id
+            cur_photo.user_id = user_id
+            cur_photo.decor_css = path
+            cur_photo.decor_css = shot_date
+            cur_photo.decor_css = comment
+            db.session.add(cur_photo)
+            db.session.commit()
+            return {'message': 'photo updated successfully'}
+        else:
+            return{'message': 'no such photo'}
 @app.route("/photos/<pid>")
 def photo_page(pid):
     #Никита
