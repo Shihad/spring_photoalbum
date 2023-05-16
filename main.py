@@ -77,19 +77,30 @@ def user_page(uid):
         if not cur_user:
             return {"error": "No such user"}
         #добавить проверки на существование пользователя,
+        if user != User.query.filter_by(user).first():
         #на совпадение с уже существующими логином и емэйл
-        cur_user.login = login
-        cur_user.mail = email
-        cur_user.password = password
-        db.session.add(cur_user)
-        db.session.commit()
-        return {"message": "User updated successfully"}
+            if mail!=User.query.filter_by(email),first():
+                cur_user.login = login
+                cur_user.mail = email
+                cur_user.password = password
+                db.session.add(cur_user)
+                db.session.commit()
+                return {"message": "User updated successfully"}
+            else:
+                return "данный адрес электронной почты уже зарегестрирован"
+        else:
+            return "такой пользователь уже есть"
+            
     if request.method == "DELETE": #Никита - доработать
         # добавить проверки на существование пользователя
-        user = User.query.filter_by(id=uid).first()
-        db.session.delete(user)
-        db.session.commit() #не удаляется потому что существует альбом с таким пользователем
-        return {'message': 'User deleted successfully'}
+        if User.query.filter_by(name)==name:
+            user = User.query.filter_by(id=uid).first()
+            db.session.delete(user)
+            db.session.commit()
+            return {'message': 'User deleted successfully'}
+        else:
+            return "Такого пользователя нет"
+
 
 @app.route("/albums", methods = ['post','get'])
 def albums():
