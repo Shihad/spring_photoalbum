@@ -1,12 +1,12 @@
 from flask import Flask, request, jsonify
-
+from flask_cors import CORS, cross_origin
 from models import db, User, Album, Photo
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'you_cant_guess_this_key'
-
+app.config['CORS_HEADERS'] = 'Content-Type'
 db.init_app(app)
 
 @app.before_first_request
@@ -23,9 +23,15 @@ def create_tables():
     db.session.commit()
     album1 = Album('Море 2022', user1.id)
     db.session.add(album1)
+    album2 = Album('Свадьба Ивановых', user1.id)
+    db.session.add(album2)
     db.session.commit()
-    photo1 = Photo(user1.id, album1.id, "/static/img/1.jpg","Мы с Серегой")
+    photo1 = Photo(user1.id, album2.id, "static/img/1.jpg","Мы с Серегой")
+    photo2 = Photo(user1.id, album1.id, "static/img/2.jpg", "Ялта")
+    photo3 = Photo(user1.id, album1.id, "static/img/3.jpg", "Сочи")
     db.session.add(photo1)
+    db.session.add(photo2)
+    db.session.add(photo3)
     db.session.commit()
 
 # Дмитрий
@@ -36,6 +42,9 @@ def users():
         userslist = db.session.query(User).all()
         for user in userslist:
             res["users"].append(user.json)
+        # В userlist добавить разделы albums - передать JSON альбомов
+        # и раздел preview - по одной фотографии от каждого фотоальбома
+        # Арсений
         return res
     if request.method == "POST": #работает
         login = request.json['login']
@@ -76,33 +85,27 @@ def user_page(uid):
             return {"error": "This email already registered"}
         if not cur_user:
             return {"error": "No such user"}
-        #добавить проверки на существование пользователя,
-        if user != User.query.filter_by(user).first():
-        #на совпадение с уже существующими логином и емэйл
-            if mail!=User.query.filter_by(email),first():
-                cur_user.login = login
-                cur_user.mail = email
-                cur_user.password = password
-                db.session.add(cur_user)
-                db.session.commit()
-                return {"message": "User updated successfully"}
-            else:
-                return "данный адрес электронной почты уже зарегестрирован"
-        else:
-            return "такой пользователь уже есть"
+        cur_user.login = login
+        cur_user.mail = email
+        cur_user.password = password
+        db.session.add(cur_user)
+        db.session.commit()
+        return {"message": "User updated successfully"}
+
             
     if request.method == "DELETE": #Никита - доработать
         # добавить проверки на существование пользователя
-        if User.query.filter_by(name)==name:
-            user = User.query.filter_by(id=uid).first()
+        user = User.query.filter_by(id=uid).first()
+        if user:
             db.session.delete(user)
             db.session.commit()
             return {'message': 'User deleted successfully'}
         else:
-            return "Такого пользователя нет"
+            return {'error':"Такого пользователя нет"}
 
 
 @app.route("/albums", methods = ['post','get'])
+@cross_origin()
 def albums():
     # Добавить проверку методов GET, POST, UPDATE, DELETE
     if request.method == "GET": #работает
@@ -121,16 +124,24 @@ def albums():
 
 
 @app.route("/albums/<aid>", methods = ['post','get', 'PUT', "DELETE"])
+@cross_origin()
 def album_page(aid):
     if request.method == "GET":
         album=Album.query.filter_by(id=aid).first()
+        dict = album.json
+        dict['photos'] = []
+        #разобраться, почему не работает album.photos
+        #Дмитрий
+        alb_photos = Photo.query.filter_by(album_id=album.id).all()
+        print(alb_photos)
+        for photo in alb_photos:
+            dict['photos'].append(photo.json)
         if album:
-            return album.json
+            return dict
         else:
             return{"error": "Album not found"}
-        #Арсений - создать по образцу users - добавить проверки +
 
-    if request.method == 'PUT': #Арсений - создать по образцу users - добавить проверки +
+    if request.method == 'PUT':
         cur_album=Album.query.filter_by(id=aid).first()
         name=request.json['name']
         user_id=request.json['user_id']
@@ -144,44 +155,19 @@ def album_page(aid):
         db.session.add(cur_album)
         db.session.commit()
         return {"message": "Album updated succesfully"}
-        '''
-            if request.method == "PUT": #работает
-        cur_user = User.query.filter_by(id=uid).first()
-        login = request.json['login']
-        password = request.json['password']
-        email = request.json['email']
-        user = User.query.filter_by(login=login).first()
-        if user and user!=cur_user:
-            return {"error": "This login already registered"}
-        user = User.query.filter_by(mail=email).first()
-        if user and user!=cur_user:
-            return {"error": "This email already registered"}
-        if not cur_user:
-            return {"error": "No such user"}
-        #добавить проверки на существование пользователя,
-        #на совпадение с уже существующими логином и емэйл
-        cur_user.login = login
-        cur_user.mail = email
-        cur_user.password = password
-        db.session.add(cur_user)
-        db.session.commit()
-        return {"message": "User updated successfully"}
-        '''
-    if request.method == "DELETE": #Арсений - создать по образцу users - добавить проверки +
+
+    if request.method == "DELETE":
         album=Album.query.filter_by(id=aid).first()
         if not album:
             return {"error": "no such album"}
         else:
-            print('1')
             db.session.delete(album)
-            print('2')
-            db.session.commit() #не удаляется потому что есть фотографии связанаы с этим альбомом
-            print('3')
+            db.session.commit()
             return {"message": "Album deleted succefully"}
         
-@app.route("/photos", methods = ['post', ' get', 'delete', 'update'])
-def photos(pid):
-    #Добавить проверку методов GET, POST, UPDATE, DELETE
+@app.route("/photos", methods = ['post', 'get', 'delete', 'put'])
+def photos():
+    #Добавить проверку методов GET, POST, PUT, DELETE
     #Богдан
     if request.method=="GET":
         res = {"photos": []}
@@ -198,6 +184,8 @@ def photos(pid):
         photo = Photo(user_id, album_id, path,comment,shot_date)
         db.session.add(photo)
         db.session.commit()
+    #метод PUT
+    #Богдан
     if request.method == "DELETE":
         photo=Photo.query.filter_by(id=pid).first()
         if photo:

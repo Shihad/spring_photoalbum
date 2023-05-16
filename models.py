@@ -10,8 +10,8 @@ class User(db.Model):
     password=db.Column(db.String(100))
     mail=db.Column(db.String(50))
     login=db.Column(db.String(50))
-    albums = db.relationship('Album',backref='user')
-    photos = db.relationship('Photo',backref='user')
+    albums = db.relationship('Album',backref='user', cascade="all")
+    photos = db.relationship('Photo',backref='user', cascade="all")
 
     def __init__(self, login, mail, password):
         self.login = login
@@ -36,7 +36,7 @@ class Album(db.Model):
     name = db.Column(db.String(255), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('db_users.id'), nullable=False)
     decor_css = db.Column(db.String(50), nullable=False)
-    photos = db.relationship('Photo',backref='album')
+    photos = db.relationship('Photo', backref='album', cascade="all")
 
     def __init__(self,name,user_id,decor_css="static/css/standart_photo.css"):
         self.name=name
@@ -46,7 +46,7 @@ class Album(db.Model):
     @property
     def json(self):
         dict = self.__dict__
-        del (dict['_sa_instance_state'])
+        dict.pop('_sa_instance_state')
         return dict
 
 class Photo(db.Model):
